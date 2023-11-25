@@ -9,12 +9,15 @@ import logo from "./assets/images/logo-dave-text.png";
 import add from "./assets/images/add.svg";
 import loadingSvg from "./assets/images/loader.svg";
 
+import Excamples from "./pages/excamples.jsx";
+
 function App() {
   const [tickersArr, setTickersArr] = useState([]);
   const [loading, setLoading] = useState(false);
   const [apiMessage, setApiMessage] = useState("");
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
+  const [activComponent, setActivComponent] = useState(false);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -90,6 +93,8 @@ function App() {
       const response = await openai.chat.completions.create({
         messages: messages,
         model: "gpt-4",
+        max_tokens: 150,
+        temperature: 2, // default 1
       });
 
       setOutput(response.choices[0].message.content);
@@ -104,6 +109,8 @@ function App() {
 
   return (
     <div className="flex flex-col items-center w-[360px] mx-auto  ">
+      <button onClick={() => setActivComponent(prevState => !prevState)} className="text-red-500 text-lg text-center px-8 py-4">Excamples</button>
+      {activComponent && <Excamples />}
       <div className="flex w-full h-32 items-center justify-center bg-black">
         <img src={logo} alt="logo" className="w-[320px] " />
       </div>
@@ -165,6 +172,7 @@ function App() {
       <p className="text-slate-800">
         &copy; This is not real financial advice!
       </p>
+
     </div>
   );
 }
