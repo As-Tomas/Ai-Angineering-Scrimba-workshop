@@ -1,5 +1,8 @@
 import React, { useState, useEffect, Text, Image } from "react";
 
+const POLYGON_API_KEY = import.meta.env.VITE_REACT_APP_POLYGON_API_KEY;
+
+
 import { dates } from "./assets/utils/dates.jsx";
 import logo from "./assets/images/logo-dave-text.png";
 import add from "./assets/images/add.svg";
@@ -12,6 +15,7 @@ function App() {
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
 
+  
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const newTickerStr = document.getElementById("ticker-input").value;
@@ -25,19 +29,28 @@ function App() {
     }
   };
 
-  const fetchStockData = async () => {
+  const fetchStockData = async (event) => {
+    event.preventDefault();
     setLoading(true);
     try {
       const stockData = await Promise.all(
         tickersArr.map(async (ticker) => {
-          const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${dates.startDate}/${dates.endDate}?apiKey=${process.env.REACT_APP_POLYGON_API_KEY}`;
-          const response = await fetch(url);
-          const data = await response.text();
-          if (response.status === 200) {
-            setApiMessage("Creating report...");
-            return data;
-          } else {
+          try {
+            console.log('ticker', ticker)
+            const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${dates.startDate}/${dates.endDate}?apiKey=${POLYGON_API_KEY}`;
+            const response = await fetch(url);
+            const data = await response.text();
+            if (response.status === 200) {
+              setApiMessage("Creating report...");
+              return data;
+            } else {
+              setError("There was an error fetching stock data.");
+              return null;
+            }
+          } catch (err) {
             setError("There was an error fetching stock data.");
+            console.error("error: ", err);
+            return null;
           }
         })
       );
@@ -54,6 +67,7 @@ function App() {
   // }
 
   const fetchReport = async (data) => {
+    console.log('data', data)
     // Your AI code here
   };
 
@@ -97,8 +111,7 @@ function App() {
             : "Your tickers will appear here..."}
         </p>
         <button
-          onClick={fetchStockData}
-          type="submit"
+          onClick={(event) => fetchStockData(event)}
           className="bg-green-300 border-2 border-gray-700 px-10 cursor-pointer uppercase font-medium text-stone-400 tracking-wider p-2 my-2"
         >
           Generate Report
