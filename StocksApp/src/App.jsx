@@ -1,7 +1,8 @@
 import React, { useState, useEffect, Text, Image } from "react";
+import OpenAI from "openai";
 
 const POLYGON_API_KEY = import.meta.env.VITE_REACT_APP_POLYGON_API_KEY;
-
+const OPENAI_API_KEY = import.meta.env.VITE_REACT_APP_OPENAI_API_KEY;
 
 import { dates } from "./assets/utils/dates.jsx";
 import logo from "./assets/images/logo-dave-text.png";
@@ -15,7 +16,6 @@ function App() {
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
 
-  
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const newTickerStr = document.getElementById("ticker-input").value;
@@ -36,7 +36,7 @@ function App() {
       const stockData = await Promise.all(
         tickersArr.map(async (ticker) => {
           try {
-            console.log('ticker', ticker)
+            console.log("ticker", ticker);
             const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${dates.startDate}/${dates.endDate}?apiKey=${POLYGON_API_KEY}`;
             const response = await fetch(url);
             const data = await response.text();
@@ -54,7 +54,7 @@ function App() {
           }
         })
       );
-      fetchReport(stockData.join(""));
+      fetchReport(stockData.join(""));      
     } catch (err) {
       setLoading(false);
       setError("There was an error fetching stock data.");
@@ -67,8 +67,39 @@ function App() {
   // }
 
   const fetchReport = async (data) => {
-    console.log('data', data)
+    // console.log("data", data);
     // Your AI code here
+
+    const messages = [
+      {
+        role: "system",
+        content: "You are a trading guru. Given data on share prices over the past 3 days, write a report of no more than 150 words describing the stocks performance and recommending whether to buy, hold or sell.",
+      },
+      {
+        role: "user",
+        content: data,
+      }
+    ]
+
+    try {
+      const openai = new OpenAI({
+        apiKey: OPENAI_API_KEY,
+        dangerouslyAllowBrowser: true,
+      });    
+
+      const response = await openai.chat.completions.create({
+        messages: messages,
+        model: "gpt-4",
+      });
+
+      setOutput(response.choices[0].message.content);
+      console.log('first', response.choices[0].message.content)
+      setLoading(false);
+
+    } catch (error) {
+      console.log("Error:", error);
+      setError("Unable to access AI. Please refresh and try again");
+    }
   };
 
   return (
@@ -86,7 +117,7 @@ function App() {
         </p>
       )}
 
-      <form  className="flex flex-col items-center">
+      <form className="flex flex-col items-center">
         <div className="flex  ">
           <input
             id="ticker-input"
