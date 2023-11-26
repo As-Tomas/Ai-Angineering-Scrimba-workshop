@@ -61,6 +61,11 @@ const Excamples = () => {
         response.
       </div>
       <div>{output}</div>
+      <div className=" font-bold text-red-400">
+      "stop: ['3.']" or stop: ['\n'] to reduce amount of output
+      </div>
+      <div>presence_penalty: 0,
+            frequency_penalty: 0 to control repetatyve text output etc</div>
     </div>
   );
 };

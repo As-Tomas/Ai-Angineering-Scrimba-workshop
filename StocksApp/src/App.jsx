@@ -10,6 +10,7 @@ import add from "./assets/images/add.svg";
 import loadingSvg from "./assets/images/loader.svg";
 
 import Excamples from "./pages/excamples.jsx";
+import Dalle from "./pages/dalle3.jsx";
 
 function App() {
   const [tickersArr, setTickersArr] = useState([]);
@@ -109,8 +110,7 @@ function App() {
 
   return (
     <div className="flex flex-col items-center w-[360px] mx-auto  ">
-      <button onClick={() => setActivComponent(prevState => !prevState)} className="text-red-500 text-lg text-center px-8 py-4">Excamples</button>
-      {activComponent && <Excamples />}
+      
       <div className="flex w-full h-32 items-center justify-center bg-black">
         <img src={logo} alt="logo" className="w-[320px] " />
       </div>
@@ -172,6 +172,11 @@ function App() {
       <p className="text-slate-800">
         &copy; This is not real financial advice!
       </p>
+
+      <button onClick={() => setActivComponent(prevState => !prevState)} className="text-red-500 text-lg text-center px-8 py-4">Excamples</button>
+      {activComponent && <Excamples />}
+      {activComponent && <Dalle />}
+
 
     </div>
   );
