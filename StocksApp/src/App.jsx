@@ -9,7 +9,7 @@ import logo from "./assets/images/logo-dave-text.png";
 import add from "./assets/images/add.svg";
 import loadingSvg from "./assets/images/loader.svg";
 
-import Excamples from "./pages/excamples.jsx";
+import Examples from "./pages/examples.jsx";
 import Dalle from "./pages/dalle3.jsx";
 import Moderation from "./pages/moderation.jsx";
 
@@ -20,6 +20,7 @@ function App() {
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
   const [activComponent, setActivComponent] = useState(false);
+  const [activeTab, setActiveTab] = useState("examples");
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -59,7 +60,7 @@ function App() {
           }
         })
       );
-      fetchReport(stockData.join(""));      
+      fetchReport(stockData.join(""));
     } catch (err) {
       setLoading(false);
       setError("There was an error fetching stock data.");
@@ -78,19 +79,20 @@ function App() {
     const messages = [
       {
         role: "system",
-        content: "You are a trading guru. Given data on share prices over the past 3 days, write a report of no more than 150 words describing the stocks performance and recommending whether to buy, hold or sell.",
+        content:
+          "You are a trading guru. Given data on share prices over the past 3 days, write a report of no more than 150 words describing the stocks performance and recommending whether to buy, hold or sell.",
       },
       {
         role: "user",
         content: data,
-      }
-    ]
+      },
+    ];
 
     try {
       const openai = new OpenAI({
         apiKey: OPENAI_API_KEY,
         dangerouslyAllowBrowser: true,
-      });    
+      });
 
       const response = await openai.chat.completions.create({
         messages: messages,
@@ -100,9 +102,8 @@ function App() {
       });
 
       setOutput(response.choices[0].message.content);
-      console.log('first', response.choices[0].message.content)
+      console.log("first", response.choices[0].message.content);
       setLoading(false);
-
     } catch (error) {
       console.log("Error:", error);
       setError("Unable to access AI. Please refresh and try again");
@@ -111,11 +112,9 @@ function App() {
 
   return (
     <div className="flex flex-col items-center w-[360px] mx-auto  ">
-      
       <div className="flex w-full h-32 items-center justify-center bg-black">
         <img src={logo} alt="logo" className="w-[320px] " />
       </div>
-
       {error ? (
         <p className="text-red-500 text-lg text-center px-8 py-4">{error}</p>
       ) : (
@@ -124,7 +123,6 @@ function App() {
           predictions report👇{" "}
         </p>
       )}
-
       <form className="flex flex-col items-center">
         <div className="flex  ">
           <input
@@ -169,17 +167,57 @@ function App() {
           <p>{output}</p>
         </div>
       )}
-
       <p className="text-slate-800">
         &copy; This is not real financial advice!
       </p>
-
-      <button onClick={() => setActivComponent(prevState => !prevState)} className="text-red-500 text-lg text-center px-8 py-4">Excamples</button>
-      {activComponent && <Excamples />}
-      {activComponent && <Dalle />}
-      {activComponent && <Moderation />}
-
-
+      <button
+        onClick={() => setActivComponent((prevState) => !prevState)}
+        className="text-red-500 text-lg text-center px-8 py-4"
+      >
+        Other examples
+      </button>{" "}
+      
+      {activComponent && (
+        <>
+          <div className="flex justify-center space-x-4 bg-stone-300 p-2">
+            <button
+              className={`py-2 px-4 ${
+                activeTab === "examples"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-black"
+              }`}
+              onClick={() => setActiveTab("examples")}
+            >
+              Examples
+            </button>
+            <button
+              className={`py-2 px-4 ${
+                activeTab === "dalle"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-black"
+              }`}
+              onClick={() => setActiveTab("dalle")}
+            >
+              Dalle
+            </button>
+            <button
+              className={`py-2 px-4 ${
+                activeTab === "moderation"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-black"
+              }`}
+              onClick={() => setActiveTab("moderation")}
+            >
+              Moderation
+            </button>
+          </div>
+          <div className=" bg-stone-200 p-2 pb-11">
+            {activeTab === "examples" && <Examples />}
+            {activeTab === "dalle" && <Dalle />}
+            {activeTab === "moderation" && <Moderation />}
+          </div>
+        </>
+      )}
     </div>
   );
 }
