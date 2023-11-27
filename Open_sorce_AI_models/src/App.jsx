@@ -1,35 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
+
+import { HfInference } from "@huggingface/inference";
+
+const VITE_HUGGINGFACE_TOKEN = import.meta.env.VITE_HUGGINGFACE_TOKEN;
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [output, setOutput] = useState('');
+
+  console.log("VITE_HUGGINGFACE_TOKEN", VITE_HUGGINGFACE_TOKEN);
+
+  const hf = new HfInference(VITE_HUGGINGFACE_TOKEN);
+
+  const textToGenerate = "The definition of machine learning inference is ";
+
+ 
+
+  async function generateText() {
+    const response = await hf.textGeneration({
+      inputs: textToGenerate,
+      model: "HuggingFaceH4/zephyr-7b-beta", // chosing a model from the list in huggingface.co/models
+
+    });
+    console.log(response);
+    setOutput(response.generated_text);
+  }
+
+  generateText();
+
+ 
 
   return (
     <>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        {output}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      
     </>
-  )
+  );
 }
 
-export default App
+export default App;
