@@ -11,6 +11,7 @@ import loadingSvg from "./assets/images/loader.svg";
 
 import Excamples from "./pages/excamples.jsx";
 import Dalle from "./pages/dalle3.jsx";
+import Moderation from "./pages/moderation.jsx";
 
 function App() {
   const [tickersArr, setTickersArr] = useState([]);
@@ -176,6 +177,7 @@ function App() {
       <button onClick={() => setActivComponent(prevState => !prevState)} className="text-red-500 text-lg text-center px-8 py-4">Excamples</button>
       {activComponent && <Excamples />}
       {activComponent && <Dalle />}
+      {activComponent && <Moderation />}
 
 
     </div>

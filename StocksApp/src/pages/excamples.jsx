@@ -50,16 +50,20 @@ const Excamples = () => {
     }
   };
 
-  useEffect(() => {
-    fetchReport();
-  }, []);
-
+  
   return (
     <div>
       <div className=" font-semibold">
         Use examples provided between ### to set the style and tone of your
         response.
       </div>
+      <button
+          type="submit"
+          onClick={fetchReport}
+          className="flex items-center p-2 px-3 my-2 cursor-pointer border-2 border-gray-700 "
+        >
+          Submit
+        </button>
       <div>{output}</div>
       <div className=" font-bold text-red-400">
       "stop: ['3.']" or stop: ['\n'] to reduce amount of output
