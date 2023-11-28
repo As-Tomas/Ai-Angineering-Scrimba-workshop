@@ -3,6 +3,7 @@ import "./App.css";
 import { generateText } from "./components/textClassTrans.jsx";
 import { tts } from "./components/textToSpeech.jsx";
 import { imageToImage } from "./components/imageToImage.jsx";
+import { getListModels } from "./components/listModels.jsx";
 
 import { HfInference } from "@huggingface/inference";
 
@@ -10,41 +11,51 @@ const VITE_HUGGINGFACE_TOKEN = import.meta.env.VITE_HUGGINGFACE_TOKEN;
 
 function App() {
   const [output, setOutput] = useState("");
-  const [showOutput, setShowOutput] = useState(false); 
+  const [showOutput, setShowOutput] = useState(false);
   const [audio, setAudio] = useState(null);
+  const [modelsList, setmodelsList] = useState([]);
 
   const handleClick = () => {
-    async function fetchData(){
-      const { generatedText, classification, translatedText } = await generateText();
+    async function fetchData() {
+      const { generatedText, classification, translatedText } =
+        await generateText();
 
       setOutput(
-              `response.generated_text: ${generatedText} \n textClassification: ${classification} \n translatedText : ${translatedText}`
-            );
+        `response.generated_text: ${generatedText} \n textClassification: ${classification} \n translatedText : ${translatedText}`
+      );
     }
     fetchData();
     setShowOutput(!showOutput);
   };
 
   const handleTTS = () => {
-    async function fetchData(){
-      const {generatedAudio} =  await tts();
-      console.log('generatedAudio', generatedAudio)
-      setAudio(generatedAudio);      
+    async function fetchData() {
+      const { generatedAudio } = await tts();
+      console.log("generatedAudio", generatedAudio);
+      setAudio(generatedAudio);
     }
-    fetchData();    
+    fetchData();
   };
 
   const convertimageToImage = () => {
-    async function fetchData(){
-      const {generatedImageBase64} =  await imageToImage();
-      console.log('generatedImage', generatedImageBase64)
+    async function fetchData() {
+      const { generatedImageBase64 } = await imageToImage();
+      console.log("generatedImage", generatedImageBase64);
       setOutput(generatedImageBase64);
-      setShowOutput(!showOutput);      
+      setShowOutput(!showOutput);
     }
-    fetchData();    
+    fetchData();
   };
 
-
+  const showListOfModels = () => {
+    async function fetchData() {
+      const { foundModels } = await getListModels();
+      console.log("foundModels", foundModels);
+      setmodelsList(foundModels);
+      setShowOutput(!showOutput);
+    }
+    fetchData();
+  };
 
   return (
     <>
@@ -66,6 +77,22 @@ function App() {
       >
         Image to image
       </button>
+      <button
+        onClick={showListOfModels}
+        className=" bg-slate-200 rounded-lg px-2 border-2 border-stone-300 "
+      >
+        Show List Of Models
+      </button>
+      {showOutput &&
+        modelsList.map((item, index) => (
+          <div key={index} className="flex ">
+            {Object.keys(item).map((key) => (
+              <p className="p-2"
+              key={key}>{`${key}: ${item[key]}`}</p>
+            ))}
+          </div>
+        ))}
+
       <img src={output}></img>
       <audio id="speech" src={audio} controls />
       {showOutput && <div>{output}</div>}
