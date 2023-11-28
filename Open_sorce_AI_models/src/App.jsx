@@ -1,69 +1,39 @@
 import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
+import { generateText } from "./components/textClassTrans.jsx";
 
 import { HfInference } from "@huggingface/inference";
 
 const VITE_HUGGINGFACE_TOKEN = import.meta.env.VITE_HUGGINGFACE_TOKEN;
 
 function App() {
-  const [output, setOutput] = useState('');
-  const [classification, setclassification] = useState('');
+  const [output, setOutput] = useState("");
+  const [showOutput, setShowOutput] = useState(false);
 
-  const hf = new HfInference(VITE_HUGGINGFACE_TOKEN);
+  useEffect(() => {
+    async function fetchData() {
+      const { generatedText, classification, translatedText } =
+        await generateText();
+      setOutput(
+        `response.generated_text: ${generatedText} \n textClassification: ${classification} \n translatedText : ${translatedText}`
+      );
+    }
+    fetchData();
+  }, []);
 
-  const textToGenerate = "The definition of machine learning inference is ";
-
- 
-
-  async function generateText() {
-    
-  const response = await hf.textGeneration({
-    inputs: textToGenerate,
-    model: "HuggingFaceH4/zephyr-7b-beta", // choosing a model from the list in huggingface.co/models
-  });
-
-  const text = response.generated_text;
-  console.log('text', text)
-
-  const textClassification = await hf.textClassification({
-    model: "distilbert-base-uncased-finetuned-sst-2-english", // getin its clasification
-    inputs: text
-  });
-  
-  console.log(textClassification[0].label);
-
-  const textTranslationResponse = await hf.translation({
-    model: 'facebook/nllb-200-distilled-600M',
-    inputs: textToGenerate,
-    parameters: {
-      src_lang: "en_XX",
-      tgt_lang: "ur_PK"
-  }
-    
-  });
-
-  const translatedText = textTranslationResponse.translation_text
-
-  setclassification(textClassification[0].label);
-
-  // Use the local variable textClassification instead of the state variable classification
-  setOutput(`response.generated_text: ${response.generated_text} \n textClassification: ${textClassification[0].label} \n translatedText : ${translatedText}`);
-}
-
-useEffect(() => {
-  generateText();
-}, []);
-
- 
+  const handleClick = () => {
+    setShowOutput(!showOutput);
+  };
 
   return (
     <>
-      <div>
-        {output}
-      </div>
-      
+      <button
+        onClick={handleClick}
+        className=" bg-slate-200 rounded-lg px-2 border-2 border-stone-300 "
+      >
+        Show text clasification translation
+      </button>
+      {showOutput && <div>{output}</div>}
     </>
   );
 }
