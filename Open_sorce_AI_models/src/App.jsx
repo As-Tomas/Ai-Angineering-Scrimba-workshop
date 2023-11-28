@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { generateText } from "./components/textClassTrans.jsx";
-import { tts } from "./components/textToSpeach.jsx";
+import { tts } from "./components/textToSpeech.jsx";
+import { imageToImage } from "./components/imageToImage.jsx";
 
 import { HfInference } from "@huggingface/inference";
 
@@ -33,6 +34,16 @@ function App() {
     fetchData();    
   };
 
+  const convertimageToImage = () => {
+    async function fetchData(){
+      const {generatedImageBase64} =  await imageToImage();
+      console.log('generatedImage', generatedImageBase64)
+      setOutput(generatedImageBase64);
+      setShowOutput(!showOutput);      
+    }
+    fetchData();    
+  };
+
 
 
   return (
@@ -47,8 +58,15 @@ function App() {
         onClick={handleTTS}
         className=" bg-slate-200 rounded-lg px-2 border-2 border-stone-300 "
       >
-        Load Text to speach
+        Load Text to speech
       </button>
+      <button
+        onClick={convertimageToImage}
+        className=" bg-slate-200 rounded-lg px-2 border-2 border-stone-300 "
+      >
+        Image to image
+      </button>
+      <img src={output}></img>
       <audio id="speech" src={audio} controls />
       {showOutput && <div>{output}</div>}
     </>
