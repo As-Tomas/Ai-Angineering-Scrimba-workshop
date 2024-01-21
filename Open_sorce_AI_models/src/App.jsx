@@ -4,6 +4,7 @@ import { generateText } from "./components/textClassTrans.jsx";
 import { tts } from "./components/textToSpeech.jsx";
 import { imageToImage } from "./components/imageToImage.jsx";
 import { getListModels } from "./components/listModels.jsx";
+import  Transformers  from "./components/transformers.jsx";
 
 import { HfInference } from "@huggingface/inference";
 
@@ -96,6 +97,9 @@ function App() {
       <img src={output}></img>
       <audio id="speech" src={audio} controls />
       {showOutput && <div>{output}</div>}
+
+      {/* // sitas neveikia */}
+      <Transformers /> 
     </>
   );
 }

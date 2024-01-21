@@ -12,6 +12,7 @@
   "dependencies": {
     "@huggingface/hub": "^0.12.2",
     "@huggingface/inference": "^2.6.4",
+    "@xenova/transformers": "^2.14.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
