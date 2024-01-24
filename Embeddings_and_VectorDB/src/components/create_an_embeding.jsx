@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from "react";
-import { openai, supabase } from './config.js';
+import { openai, supabase } from "./config.js";
 
 export default function CreateAnEmbedding() {
-  const [embedding, setEmbedding] = useState(null);  
+  const [embedding, setEmbedding] = useState(null);
 
   const content = [
     "Beyond Mars: speculating life on distant planets.",
@@ -12,27 +11,29 @@ export default function CreateAnEmbedding() {
     "Rediscovering lost melodies: the rebirth of vinyl culture.",
     "Tales from the tech frontier: decoding AI ethics.",
   ];
-//   Jiq5S-x$ee(&z!W
+
   console.log("Component rendered");
 
   useEffect(() => {
     const createEmbedding = async (input) => {
-      const results = await Promise.all(
+      const data = await Promise.all(
         input.map(async (textChunk) => {
           const embeddingResponse = await openai.embeddings.create({
             model: "text-embedding-ada-002",
             input: textChunk,
           });
-          const data = {
+          return {
             content: textChunk,
             embedding: embeddingResponse.data[0].embedding,
           };
-          console.log(data);
-          return data;
         })
       );
-      setEmbedding(results);
-      console.log("Embedding complete!");
+      setEmbedding(data);
+
+      // Insert content and embedding into Supabase
+      await supabase.from('documents').insert(data);
+
+      console.log("Embedding and storing complete!");
     };
 
     createEmbedding(content);
