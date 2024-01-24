@@ -1,21 +1,9 @@
-import OpenAI from "openai";
-import React, { useEffect, useState } from "react";
 
-const OPENAI_API_KEY = import.meta.env.VITE_REACT_APP_OPENAI_API_KEY;
+import React, { useEffect, useState } from "react";
+import { openai, supabase } from './config.js';
 
 export default function CreateAnEmbedding() {
-  const [embedding, setEmbedding] = useState(null);
-
-  /** Ensure the OpenAI API key is available and correctly configured */
-  if (!OPENAI_API_KEY) {
-    throw new Error("OpenAI API key is missing or invalid.");
-  }
-
-  /** OpenAI config */
-  const openai = new OpenAI({
-    apiKey: OPENAI_API_KEY,
-    dangerouslyAllowBrowser: true,
-  });
+  const [embedding, setEmbedding] = useState(null);  
 
   const content = [
     "Beyond Mars: speculating life on distant planets.",
@@ -24,7 +12,7 @@ export default function CreateAnEmbedding() {
     "Rediscovering lost melodies: the rebirth of vinyl culture.",
     "Tales from the tech frontier: decoding AI ethics.",
   ];
-
+//   Jiq5S-x$ee(&z!W
   console.log("Component rendered");
 
   useEffect(() => {
