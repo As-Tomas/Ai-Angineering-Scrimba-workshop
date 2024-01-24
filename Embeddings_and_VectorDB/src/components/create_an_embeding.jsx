@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 
 const OPENAI_API_KEY = import.meta.env.VITE_REACT_APP_OPENAI_API_KEY;
 
-export default  function CreateAnEmbedding() {
+export default function CreateAnEmbedding() {
   const [embedding, setEmbedding] = useState(null);
 
   /** Ensure the OpenAI API key is available and correctly configured */
@@ -23,23 +23,31 @@ export default  function CreateAnEmbedding() {
     "Mysteries of the deep: exploring uncharted ocean caves.",
     "Rediscovering lost melodies: the rebirth of vinyl culture.",
     "Tales from the tech frontier: decoding AI ethics.",
-  ]; 
+  ];
+
+  console.log("Component rendered");
 
   useEffect(() => {
-    const createEmbedding = async () => {
-      const result = await openai.embeddings.create({
-        model: "text-embedding-ada-002",
-        input: content
-      });
-
-      console.log(result);
-      setEmbedding(result);
-    //   console.log(embedding.data); 
+    const createEmbedding = async (input) => {
+      const results = await Promise.all(
+        input.map(async (textChunk) => {
+          const embeddingResponse = await openai.embeddings.create({
+            model: "text-embedding-ada-002",
+            input: textChunk,
+          });
+          const data = {
+            content: textChunk,
+            embedding: embeddingResponse.data[0].embedding,
+          };
+          console.log(data);
+          return data;
+        })
+      );
+      setEmbedding(results);
+      console.log("Embedding complete!");
     };
 
-    // console.log(embedding.data[0].embedding.length); parodo dydi kiek skaiciu embeding arejus turi
-
-    createEmbedding();
+    createEmbedding(content);
   }, []);
 
   return (

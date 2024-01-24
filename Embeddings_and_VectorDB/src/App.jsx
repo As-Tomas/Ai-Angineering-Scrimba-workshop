@@ -1,4 +1,4 @@
-import { useState } from 'react'
+
 import './App.css'
 import CreateAnEmbedding from './components/create_an_embeding'
 
