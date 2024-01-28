@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { openai, supabase } from "./config.js";
+ import podcasts from "./content.js";
 
 export default function CreateAnEmbedding() {
   const [embedding, setEmbedding] = useState(null);
@@ -13,6 +14,12 @@ export default function CreateAnEmbedding() {
   ];
 
   console.log("Component rendered");
+
+  const storeToDB = async ()=>{
+// Insert content and embedding into Supabase
+      await supabase.from('documents').insert(embedding);
+    console.log("Storing complete!");
+  }
 
   useEffect(() => {
     const createEmbedding = async (input) => {
@@ -28,19 +35,18 @@ export default function CreateAnEmbedding() {
           };
         })
       );
-      setEmbedding(data);
 
-      // Insert content and embedding into Supabase
-      await supabase.from('documents').insert(data);
+      setEmbedding(data);      
 
-      console.log("Embedding and storing complete!");
+      console.log("Embedding complete!");
     };
 
-    createEmbedding(content);
+    createEmbedding(podcasts);
   }, []);
 
   return (
     <div>
+        <button className=" bg-slate-300 border-2 border-gray-600 m-2 " onClick={storeToDB}>Store to DB</button>
       <h1>Embedding</h1>
       <p>Embedding: {embedding ? JSON.stringify(embedding) : "Loading..."}</p>
     </div>
