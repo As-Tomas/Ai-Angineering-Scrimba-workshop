@@ -16,43 +16,61 @@ export default function ChunkingAndStoring() {
   /* Split movies.txt into text chunks.
 Return LangChain's "output" – the array of Document objects. */
   async function splitDocument(document) {
-    const response = await fetch(document);
-    const text = await response.text();
-    const splitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 250,
-      chunkOverlap: 35,
-    });
-    const output = await splitter.createDocuments([text]);
-    return output;
+    try {
+      const response = await fetch(document);
+      // Check if fetch request was successful
+      if (!response.ok) {
+        throw new Error("Network response was not ok.");
+      }
+
+      const text = await response.text();
+      const splitter = new RecursiveCharacterTextSplitter({
+        chunkSize: 250,
+        chunkOverlap: 35,
+      });
+      const output = await splitter.createDocuments([text]);
+      return output;
+    } catch (e) {
+      console.error("There was an issue with splitting text");
+      throw e;
+    }
   }
 
   /* Create an embedding from each text chunk.
 Store all embeddings and corresponding text in Supabase. */
   async function createAndStoreEmbeddings() {
-    const chunkData = await splitDocument(movies);
-    const data = await Promise.all(
-      chunkData.map(async (chunk) => {
-        const embeddingResponse = await openai.embeddings.create({
-          model: "text-embedding-ada-002",
-          input: chunk.pageContent,
-        });
-        return {
-          content: chunk.pageContent,
-          embedding: embeddingResponse.data[0].embedding,
-        };
-      })
-    );
-    await supabase.from("movies").insert(data);
-    console.log("Chunking And Storing to DB - SUCCESS!");
+    try {
+      const chunkData = await splitDocument(movies);
+      const data = await Promise.all(
+        chunkData.map(async (chunk) => {
+          const embeddingResponse = await openai.embeddings.create({
+            model: "text-embedding-ada-002",
+            input: chunk.pageContent,
+          });
+          return {
+            content: chunk.pageContent,
+            embedding: embeddingResponse.data[0].embedding,
+          };
+        })
+      );
+      const { error } = await supabase.from("movies").insert(data);
+      if (error) {
+        throw new Error("Issue inserting data into the database.");
+      }
+      console.log("Chunking And Storing to DB - SUCCESS!");
+    } catch (e) {
+      console.error("ERROR: " + e.message);
+    }
   }
- 
 
-  return <div>
-    <button
+  return (
+    <div>
+      <button
         className=" bg-slate-300 border-2 border-gray-600 m-2 "
         onClick={createAndStoreEmbeddings}
       >
         Chunking And Storing to DB
       </button>
-  </div>;
+    </div>
+  );
 }
