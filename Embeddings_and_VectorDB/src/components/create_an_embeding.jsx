@@ -3,25 +3,24 @@ import { openai, supabase } from "./config.js";
 import podcasts from "./content.js";
 
 export default function CreateAnEmbedding() {
-  const [embedding, setEmbedding] = useState(null); 
+  const [embedding, setEmbedding] = useState(null);
+  const [query, setQuery] = useState("");
+  const [inputValue, setInputValue] = useState("");
 
-  const storeToDB = async () => {
-    // Insert content and embedding into Supabase
-    await supabase.from("documents").insert(embedding);
-    console.log("Storing complete!");
-  };
-
- 
   // User query about podcasts
-  const query = "An episode Elon Musk would enjoy";
-  
+  //   const query = "I feel like having a good laugh! fin me few movies";
+  //   const query = "What's the highest rated movie?";
+  //   const query = "The movie with that actor from Castaway?";
 
   // Bring all function calls together
   async function main(input) {
-    const embedding = await createEmbedding(input);
-    const match = await findNearestMatch(embedding);
-    return await getChatCompletion(match, input);
-
+    try {
+      const embedding = await createEmbedding(input);
+      const match = await findNearestMatch(embedding);
+      return await getChatCompletion(match, input);
+    } catch (error) {
+      console.error("Error in main function.", error);
+    }
   }
 
   // Create an embedding vector representing the input text
@@ -35,61 +34,88 @@ export default function CreateAnEmbedding() {
 
   // Query Supabase and return a semantically matching text chunk
   async function findNearestMatch(embedding) {
-    const { data } = await supabase.rpc("match_documents", {
+    const { data } = await supabase.rpc("match_movies", {
       query_embedding: embedding,
-      match_threshold: 0.5,
-      match_count: 1,
+      match_threshold: 0.50,
+      match_count: 4,
     });
-    return data[0].content;
+    // Manage multiple returned matches
+    const match = data.map((obj) => obj.content).join("\n");
+    return match;
   }
 
   // Use OpenAI to make the response conversational
-  const chatMessages = [
-    {
+  const chatMessages = [{
       role: "system",
-      content: `You are an enthusiastic podcast expert who loves recommending podcasts to people. You will be given two pieces of information - 
-      some context about podcasts episodes and a question. Your main job is to formulate a short answer to the question using the provided context.
-       If you are unsure and cannot find the answer in the context, say, "Sorry, I don't know the answer." Please do not make up the answer.`,
-    },
-  ];
+      content: `You are an enthusiastic movie expert who loves recommending movies to people. You
+       will be given two pieces of information - some context about movies and a question. Your main 
+       job is to formulate a short answer to the question using the provided context. If the answer is
+        not given in the context, find the answer in the conversation history if possible. If you are
+         unsure and cannot find the answer, say, "Sorry, I don't know the answer." Please do not make up
+          the answer. Always speak as if you were chatting to a friend.`,
+    }];
 
   async function getChatCompletion(text, query) {
+
     chatMessages.push({
       role: "user",
       content: `Context: ${text} Question: ${query}`,
     });
 
-    const response = await openai.chat.completions.create({
+    const { choices } = await openai.chat.completions.create({
       model: "gpt-4",
       messages: chatMessages,
-      temperature: 0.5,
+      temperature: 0.65,
       frequency_penalty: 0.5,
     });
 
-    console.log(response.choices[0].message.content); 
-    return response.choices[0].message.content;   
+    chatMessages.push(choices[0].message);
+    return choices[0].message.content;
   }
 
-  useEffect(() => {
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setQuery(inputValue);
+  };
+
+useEffect(() => {
     const fetchData = async () => {
-      const data = await main(query);
-      setEmbedding(data);
-      console.log("data", data);
+        const data = await main(query);
+        setEmbedding(data);
     };
 
-    fetchData();
-  }, []);
+    if (query) {
+        fetchData();
+    }
+}, [query]);
 
   return (
     <div>
-      <button
-        className=" bg-slate-300 border-2 border-gray-600 m-2 "
-        onClick={storeToDB}
-      >
-        Store to DB
-      </button>
       <h1>Embedding</h1>
-      <p>Embedding: {embedding ? JSON.stringify(embedding) : "Loading..."}</p>
+      <form onSubmit={handleSubmit} className="flex flex-row space-y-3 items-center justify-center">
+        <label className="flex flex-row">
+          Query:
+          <input
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange}
+            className="p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+          />
+        </label>
+        <input
+          type="submit"
+          value="Submit"
+          className="p-2 bg-blue-500 text-white rounded-md cursor-pointer hover:bg-blue-700"
+        />
+      </form>
+
+      <p className=" text-2xl font-bold text-slate-600">
+        {embedding ? JSON.stringify(embedding) : "Loading..."}
+      </p>
     </div>
   );
 }
