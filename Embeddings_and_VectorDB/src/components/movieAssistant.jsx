@@ -74,13 +74,15 @@ const MovieAssistant = () => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="border-2 p-2 border-slate-500 bg-slate-200">
         <input
+        className="border-2 border-gray-600 "
           type="text"
+          placeholder="Ask a question about movies..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />
-        <button type="submit">Submit</button>
+        <button className="ml-2 border-2 rounded-l-xl bg-green-400" type="submit">Submit</button>
       </form>
       <div className="reply">{reply}</div>
     </div>
