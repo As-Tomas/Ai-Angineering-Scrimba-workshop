@@ -1,0 +1,127 @@
+import React, { useState } from 'react';
+import OpenAI from 'openai';
+import { getCurrentWeather, getLocation } from './tools';
+
+const OPENAI_API_KEY = import.meta.env.VITE_REACT_APP_OPENAI_API_KEY;
+
+const openai = new OpenAI({
+    apiKey: OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true
+});
+
+const availableFunctions = {
+    getCurrentWeather,
+    getLocation
+};
+
+/**
+ * Goal - build an agent that can answer any questions that might require knowledge about my current location and the current weather at my location.
+ */
+
+const ReActAgent = () => {
+    const [query, setQuery] = useState('');
+    const [response, setResponse] = useState('');
+
+    const handleQueryChange = (event) => {
+        setQuery(event.target.value);
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const agentResponse = await agent(query);
+        setResponse(agentResponse);
+    };
+
+    const agent = async (userQuery) => {
+        const systemPrompt = `
+        You cycle through Thought, Action, PAUSE, Observation. At the end of the loop you output a final Answer. Your final answer should be highly specific to the observations you have from running
+        the actions.
+        1. Thought: Describe your thoughts about the question you have been asked.
+        2. Action: run one of the actions available to you - then return PAUSE.
+        3. PAUSE
+        4. Observation: will be the result of running those actions.
+        
+        Available actions:
+        - getCurrentWeather: 
+            E.g. getCurrentWeather: Salt Lake City
+            Returns the current weather of the location specified.
+        - getLocation:
+            E.g. getLocation: null
+            Returns user's location details. No arguments needed.
+        
+        Example session:
+        Question: Please give me some ideas for activities to do this afternoon.
+        Thought: I should look up the user's location so I can give location-specific activity ideas.
+        Action: getLocation: null
+        PAUSE
+        
+        You will be called again with something like this:
+        Observation: "New York City, NY"
+        
+        Then you loop again:
+        Thought: To get even more specific activity ideas, I should get the current weather at the user's location.
+        Action: getCurrentWeather: New York City
+        PAUSE
+        
+        You'll then be called again with something like this:
+        Observation: { location: "New York City, NY", forecast: ["sunny"] }
+        
+        You then output:
+        Answer: <Suggested activities based on sunny weather that are highly specific to New York City and surrounding areas.>
+        `; 
+
+        let messages = [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userQuery }
+        ];
+
+        const MAX_ITERATIONS = 5;
+        const actionRegex = /^Action: (\w+): (.*)$/;
+
+        for (let i = 0; i < MAX_ITERATIONS; i++) {
+            console.log(`Iteration #${i + 1}`);
+            const response = await openai.chat.completions.create({
+                model: "gpt-3.5-turbo",
+                messages
+            });
+
+            const responseText = response.choices[0].message.content;
+            console.log(responseText)
+            messages.push({ role: "assistant", content: responseText });
+            const responseLines = responseText.split("\n");
+
+            const foundActionStr = responseLines.find(str => actionRegex.test(str));
+
+            if (foundActionStr) {
+                const actions = actionRegex.exec(foundActionStr);
+                const [_, action, actionArg] = actions;
+
+                if (!availableFunctions.hasOwnProperty(action)) {
+                    throw new Error(`Unknown action: ${action}`);
+                }
+
+                console.log(`Calling function ${action} with argument ${actionArg}`)
+                const observation = await availableFunctions[action](actionArg);
+                messages.push({ role: "assistant", content: `Observation: ${observation}` });
+            } else {
+                console.log("Agent finished with task")
+                return responseText;
+            }
+        }
+    };
+
+    return (
+        <div>
+            <p>What is the current weather in New York City? - checks just temp</p>
+            <p>What is the current weather in my location? - check both location and temp</p>
+            <p>What are some activity ideas that I can do this afternoon based on my location and weather? - does both loca and temp pluss activities by it self </p>
+            <form onSubmit={handleSubmit}>
+                <input className=" border-2 p-3 rounded-lg" placeholder="ask for something" type="text" value={query} onChange={handleQueryChange} />
+                <button className=" m-4 border-2 border-gray-400 bg-slate-100 hover:bg-slate-300 " type="submit">Ask</button>
+            </form>
+            <div className="response">{response}</div>
+        </div>
+    );
+};
+
+export default ReActAgent;
