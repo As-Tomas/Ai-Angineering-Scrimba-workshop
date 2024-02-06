@@ -9,10 +9,11 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 });
 
-const MovieExpert = "";
-const file_ids = [""];
+const MovieExpert = "asst_HIPK2NVtxjkt9PYEmzQmtgoq";
+const file_ids = ["file-UuVlCAXZDOHHl8fgrYZEtkkM"];
 
-const threadID = "";
+let threadID = "thread_kGsRo2OJUrtF5ID89G8t8Eh8";
+let runID = "run_4YW1W73dp3W6pwTDGcWAC5uQ";
 
 export default function Assistant() {
   const [query, setQuery] = useState("");
@@ -27,9 +28,14 @@ export default function Assistant() {
     // 1) run code upload file and save its Id
     // 2) create assistant wit file ID and save assistans id
     // 3) create thread and save thread id
-    //  const agentResponse = await uploadFile();
+    // const agentResponse = await uploadFile();
     // const agentResponse = await createAssistant(query);
+
     // const agentResponse = await CreateThread();
+    // const agentResponse = await createMessage();
+    // const agentResponse = await runThread();
+    // const agentResponse = await getRun();
+    const agentResponse = await listMessages();
     setResponse(agentResponse);
   };
 
@@ -49,7 +55,7 @@ export default function Assistant() {
       instructions: `You are great at recommending movies. When asked a question, use the information 
       in the provided file to form a friendly response. If you cannot find the answer in the file, do 
       your best to infer what the answer should be.`,
-      name: "Movie Expert2",
+      name: "Movie Expert3",
       tools: [{ type: "retrieval" }],
       model: "gpt-4-1106-preview",
       file_ids: file_ids,
@@ -63,8 +69,47 @@ export default function Assistant() {
   async function CreateThread() {
     const thread = await openai.beta.threads.create();
     console.log(thread);
+    threadID = thread.id;
     return thread.id;
   }
+
+  async function createMessage() {
+    const threadMessages = await openai.beta.threads.messages.create(threadID, {
+      role: "user",
+      content: "Can you recommend a comedy?",
+    });
+    console.log(threadMessages);
+  }
+
+  // Run the assistant's thread
+  async function runThread() {
+    const run = await openai.beta.threads.runs.create(threadID, {
+      assistant_id: MovieExpert,
+    });
+    console.log(run);
+    runID = run.id;
+    return run.id;
+  }
+
+  // Get the current run
+  async function getRun() {
+    const currentRun = await openai.beta.threads.runs.retrieve(
+      threadID,
+      runID
+    );
+    console.log("Run status: " + currentRun.status);
+    return currentRun.status;
+  }
+
+  // List thread messages
+  async function listMessages() {
+    const threadMessages = await openai.beta.threads.messages.list(threadID);
+
+    console.log(threadMessages.data);
+    return threadMessages.data[0].content[0].text.value;
+}
+  
+  
 
   return (
     <div>
