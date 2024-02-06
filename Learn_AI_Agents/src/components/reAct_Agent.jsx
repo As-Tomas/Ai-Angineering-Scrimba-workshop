@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import OpenAI from "openai";
-import { getCurrentWeather, getLocation, tools } from "./tools";
+import { getCurrentWeather, getLocation, tools, functions } from "./tools";
 
 const OPENAI_API_KEY = import.meta.env.VITE_REACT_APP_OPENAI_API_KEY;
 
@@ -44,58 +44,68 @@ const ReActAgent = () => {
       { role: "user", content: userQuery },
     ];
 
-    const MAX_ITERATIONS = 5;
+    // const MAX_ITERATIONS = 5;
 
-    for (let i = 0; i < MAX_ITERATIONS; i++) {
-      console.log(`Iteration #${i + 1}`);
-      const response = await openai.chat.completions.create({
+    // for (let i = 0; i < MAX_ITERATIONS; i++) {
+    //   console.log(`Iteration #${i + 1}`);
+    //   const response = await openai.chat.completions.create({
+    //     model: "gpt-3.5-turbo-1106",
+    //     messages,
+    //     tools
+    //   });
+
+    //   const responseText = response.choices[0];
+    //     console.log("responseText:", responseText);
+    //     // Check finish_reason
+    //     // if "stop"
+    //         // return the result
+    //     // else if "tool_calls"
+    //         // call functions
+    //         // append results
+    //         // continue
+    //     const { finish_reason: wahteverIWantToCallITfinishReason, message } = response.choices[0]
+    //     const { tool_calls: toolCalls } = message
+
+    //     messages.push(message)
+
+    //     if (wahteverIWantToCallITfinishReason === "stop") {
+    //         console.log(message.content)
+    //         console.log("AGENT ENDING")
+    //         return message.content
+
+    //     } else if (responseText.finish_reason === "tool_calls") {
+    //         // get the function name
+    //         // access the actual function from the array of available functions
+    //         // call that function
+    //         // console.log the result
+    //         for (const toolCall of toolCalls) {
+    //             const functionName = toolCall.function.name
+    //             const functionToCall = availableFunctions[functionName]
+                
+    //             // What's the current weather in Tokyo and New York City and Oslo?
+                
+    //             const functionArgs = JSON.parse(toolCall.function.arguments)
+    //             const functionResponse = await functionToCall(functionArgs)
+    //             console.log(functionResponse)
+    //             messages.push({
+    //                 tool_call_id: toolCall.id,
+    //                 role: "tool",
+    //                 name: functionName,
+    //                 content: functionResponse
+    //             })
+    //         }
+    //     }
+    // }
+
+    const runner = openai.beta.chat.completions.runFunctions({
         model: "gpt-3.5-turbo-1106",
         messages,
-        tools
-      });
-
-      const responseText = response.choices[0];
-        console.log("responseText:", responseText);
-        // Check finish_reason
-        // if "stop"
-            // return the result
-        // else if "tool_calls"
-            // call functions
-            // append results
-            // continue
-        const { finish_reason: wahteverIWantToCallITfinishReason, message } = response.choices[0]
-        const { tool_calls: toolCalls } = message
-
-        messages.push(message)
-
-        if (wahteverIWantToCallITfinishReason === "stop") {
-            console.log(message.content)
-            console.log("AGENT ENDING")
-            return message.content
-
-        } else if (responseText.finish_reason === "tool_calls") {
-            // get the function name
-            // access the actual function from the array of available functions
-            // call that function
-            // console.log the result
-            for (const toolCall of toolCalls) {
-                const functionName = toolCall.function.name
-                const functionToCall = availableFunctions[functionName]
-                
-                // What's the current weather in Tokyo and New York City and Oslo?
-                
-                const functionArgs = JSON.parse(toolCall.function.arguments)
-                const functionResponse = await functionToCall(functionArgs)
-                console.log(functionResponse)
-                messages.push({
-                    tool_call_id: toolCall.id,
-                    role: "tool",
-                    name: functionName,
-                    content: functionResponse
-                })
-            }
-        }
-    }
+        functions
+    }).on("message", (message) => console.log(message))
+    
+    const finalContent = await runner.finalContent()
+    console.log(finalContent)
+    return finalContent;
   };
 
   return (

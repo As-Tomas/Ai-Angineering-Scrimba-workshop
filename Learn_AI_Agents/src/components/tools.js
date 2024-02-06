@@ -20,6 +20,7 @@ export async function getLocation() {
       }
 }
 
+//! in openai beta we do not use tools we define as functions
 export const tools =[
     {
         type: "function",
@@ -47,6 +48,29 @@ export const tools =[
                 type: "object",
                 properties: {}
             }
+        }
+    },
+]
+
+export const functions = [
+    {
+        function: getCurrentWeather,
+        parameters: {
+            type: "object",
+            properties: {
+                location: {
+                    type: "string",
+                    description: "The location from where to get the weather"
+                }
+            },
+            required: ["location"]
+        }
+    },
+    {
+        function: getLocation,
+        parameters: {
+            type: "object",
+            properties: {}
         }
     },
 ]
