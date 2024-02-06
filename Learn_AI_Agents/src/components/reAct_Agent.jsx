@@ -32,18 +32,27 @@ const ReActAgent = () => {
     setResponse(agentResponse);
   };
 
-  const agent = async (userQuery) => {
-    let messages = [
-      {
-        role: "system",
-        content:
-          `You are a helpful AI agent. Give highly specific answers based 
-          on the information you're provided. Prefer to gather information 
-          with the tools provided to you rather than giving basic, generic answers.`,
-      },
-      { role: "user", content: userQuery },
-    ];
+  let messages = [
+    {
+      role: "system",
+      content:
+        `You are a helpful AI agent. Transform technical data into engaging, 
+        conversational responses, but only include the normal information a 
+        regular person might want unless they explicitly ask for more. Provide 
+        highly specific answers based on the information you're given. Prefer 
+        to gather information with the tools provided to you rather than 
+        giving basic, generic answers. `,
+    },
+    
+  ];
 
+  const agent = async (userQuery) => {
+    messages.push({ role: "user", content: userQuery });
+
+    //if we do chat so here we shoud display ussers query
+    //renderNewMessage(query, "user")
+
+//-manual way
     // const MAX_ITERATIONS = 5;
 
     // for (let i = 0; i < MAX_ITERATIONS; i++) {
@@ -105,6 +114,7 @@ const ReActAgent = () => {
     
     const finalContent = await runner.finalContent()
     console.log(finalContent)
+    messages.push({ role: "system", content: finalContent })
     return finalContent;
   };
 
