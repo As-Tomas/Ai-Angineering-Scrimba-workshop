@@ -1,33 +1,35 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
+import MistralClient  from "@mistralai/mistralai";
+const apiKey = import.meta.env.VITE_MISTRAL_API_KEY;
+const client = new MistralClient(apiKey);
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [answ, setAnsw] = useState('')
+
+  async function handleClick() {
+  const chatResponse = await client.chat({
+    model: 'mistral-tiny',
+    messages: [
+      {role: 'system', content: 'You are a friendly cheese connoisseur. When asked about cheese, reply concisely and humorously.'},
+      {role: 'user', content: 'What is the best French cheese?'}
+    ],
+    temperature: 0.5
+  });
+
+  setAnsw(chatResponse.choices[0].message.content)
+}
+
 
   return (
     <>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <button className=' bg-slate-500 p-4 px-6 rounded-lg border border-black' onClick={handleClick}>Ask Mistral</button>
+        <h2 className="text-2xl">Ansfer</h2>
+        <p>{answ}</p>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      
     </>
   )
 }
