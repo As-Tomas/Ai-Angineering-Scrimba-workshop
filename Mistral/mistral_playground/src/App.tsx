@@ -9,7 +9,7 @@ function App() {
   const [answ, setAnsw] = useState('')
 
   async function handleClick() {
-  const chatResponse = await client.chat({
+  const chatResponse = await client.chatStream({
     model: 'mistral-tiny',
     messages: [
       {role: 'system', content: 'You are a friendly cheese connoisseur. When asked about cheese, reply concisely and humorously.'},
@@ -18,7 +18,14 @@ function App() {
     temperature: 0.5
   });
 
-  setAnsw(chatResponse.choices[0].message.content)
+  
+    for await (const chunk of chatResponse) {   
+      const newContent = chunk.choices[0].delta.content || '';
+      setAnsw(prevAnsw => prevAnsw + newContent);
+    }
+    
+// console.log(chatResponse.choices[0].message.content);
+  
 }
 
 
