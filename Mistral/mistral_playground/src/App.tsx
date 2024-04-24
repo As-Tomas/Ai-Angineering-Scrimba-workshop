@@ -1,51 +1,34 @@
-import { useState } from "react";
-import "./App.css";
+// App.tsx
+import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
+import ChatComponent from "./components/ChatComponent";
 
-import MistralClient from "@mistralai/mistralai";
-const apiKey = import.meta.env.VITE_MISTRAL_API_KEY;
-const client = new MistralClient(apiKey);
+function ProjectDescription() {
+  return <h2>Project description</h2>;
+}
 
 function App() {
-  const [answ, setAnsw] = useState("");
-
-  async function handleClick() {
-    const chatResponse = await client.chat({
-      model: "mistral-tiny",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a friendly cheese connoisseur. When asked about cheese, reply concisely and humorously. Reply with JSON.",
-        },
-        { role: "user", content: "What is the best French cheese?" },
-      ],
-      temperature: 0.5,
-      response_format: {
-        type: "json_object",
-      },
-    });
-
-    // for await (const chunk of chatResponse) {
-    //   const newContent = chunk.choices[0].delta.content || '';
-    //   setAnsw(prevAnsw => prevAnsw + newContent);
-    // }
-
-    setAnsw(chatResponse.choices[0].message.content);
-  }
-
   return (
-    <>
-      <div>
-        <button
-          className=" bg-slate-500 p-4 px-6 rounded-lg border border-black"
-          onClick={handleClick}
-        >
-          Ask Mistral
-        </button>
-        <h2 className="text-2xl">Ansfer</h2>
-        <p>{answ}</p>
+    <Router>
+      <div className="flex">
+        <nav className="w-1/5 p-4 border-r border-black text-2xl font-semibold text-slate-600  ">
+          <ul>
+            <li className="border-b border-slate-300">
+              <Link to="/description">Project Description</Link>
+            </li>
+            <li className="border-b border-slate-300 ">
+              <Link to="/chat">Chat</Link>
+            </li>
+          </ul>
+        </nav>
+
+        <div className="flex-grow p-4">
+          <Routes>
+            <Route path="/chat" element={<ChatComponent />} />
+            <Route path="/description" element={<ProjectDescription />} />
+          </Routes>
+        </div>
       </div>
-    </>
+    </Router>
   );
 }
 
