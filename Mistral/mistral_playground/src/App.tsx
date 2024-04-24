@@ -3,8 +3,17 @@ import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
 import ChatComponent from "./components/ChatComponent";
 
 function ProjectDescription() {
-  return <h2>Project description</h2>;
-}
+  return (
+    <div className=' flex flex-col items-center justify-center'>
+      <h2 className="text-3xl font-semibold p-4">Project description</h2>
+      <p className=" w-2/3 ">
+        This project is a playground for Mistral AI. It demonstrates how to use
+        the Mistral AI API to build a chatbot. The chatbot is trained on the
+        Mistral-tiny model and is designed to answer questions about cheese.
+      </p>
+   </div>
+  );
+  }
 
 function App() {
   return (
