@@ -2,6 +2,7 @@
 import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
 import ChatComponent from "./components/ChatComponent";
 import ChunkingData from "./components/ChunkingData";
+import QueryAndCompletion from "./components/QueryAndCompletion";
 
 function ProjectDescription() {
   return (
@@ -31,6 +32,9 @@ function App() {
             <li className="border-b border-slate-300 ">
               <Link to="/chunkingdata">Chunking Data with langchain</Link>
             </li>
+            <li className="border-b border-slate-300 ">
+              <Link to="/retrieve">Retrieve Data</Link>
+            </li>
           </ul>
         </nav>
 
@@ -39,6 +43,7 @@ function App() {
             <Route path="/chat" element={<ChatComponent />} />
             <Route path="/description" element={<ProjectDescription />} />
             <Route path="/chunkingdata" element={<ChunkingData />} />
+            <Route path="/retrieve" element={<QueryAndCompletion />} />
           </Routes>
         </div>
       </div>
