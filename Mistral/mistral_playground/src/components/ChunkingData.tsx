@@ -1,14 +1,19 @@
 import React from "react";
 import { splitDocument } from "../RAG/text_splitter";
 import MistralClient from "@mistralai/mistralai";
+import { createClient } from "@supabase/supabase-js";
+
 const apiKey = import.meta.env.VITE_MISTRAL_API_KEY;
-const client = new MistralClient(apiKey);
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_API_KEY;
+
+const mistalClient = new MistralClient(apiKey);
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function ChunkingData() {
   const [textArr, setTextArr] = React.useState<string[] | null>(null);
-  const [chunkEmbedding, setChunkEmbedding] = React.useState<string | null>(
-    null
-  );
+  const [chunkEmbedding, setChunkEmbedding] = React.useState<string | null>(null);
+  const [chunksAndEmbeddings, setChunksAndEmbeddings] = React.useState<any[] | null>(null);
 
   async function useSplitDocument() {
     const textArr = await splitDocument("handbook.txt");
@@ -17,7 +22,7 @@ export default function ChunkingData() {
   }
 
   async function createEmbeddings(chunks: string[]) {  
-    const chunkEmbedding = await client.embeddings({
+    const chunkEmbedding = await mistalClient.embeddings({
       model: "mistral-embed",
       input: chunks,
     });
@@ -30,8 +35,15 @@ export default function ChunkingData() {
     });    
 
     setChunkEmbedding(JSON.stringify(chunksAndEmbeddings, null, 2));
+    setChunksAndEmbeddings(chunksAndEmbeddings);
 
     return chunksAndEmbeddings
+  }
+
+  async function storeChunksAndEmbeddings(chunksAndEmbeddings: any[]) {
+    await supabase.from('handbook_docs').insert(chunksAndEmbeddings);
+    console.log("Upload complete!");
+    setChunkEmbedding("Upload complete!");
   }
 
   
@@ -60,6 +72,13 @@ export default function ChunkingData() {
         >
           {" "}
           Get chunk embedding
+        </button>
+        <button
+          className=" bg-slate-500 p-4 px-6 rounded-lg border border-black"
+          onClick={() => chunksAndEmbeddings && storeChunksAndEmbeddings(chunksAndEmbeddings)}
+        >
+          {" "}
+          Store chunksAndEmbeddings in Supabase
         </button>
       </div>
       <div>{chunkEmbedding}</div>

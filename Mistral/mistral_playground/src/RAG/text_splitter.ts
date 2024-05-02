@@ -1,6 +1,7 @@
+
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
-export async function splitDocument(path) {
+export async function splitDocument(path: string): Promise<string[]> {
     const response = await fetch(path);
     const text = await response.text();
     const splitter = new RecursiveCharacterTextSplitter({
