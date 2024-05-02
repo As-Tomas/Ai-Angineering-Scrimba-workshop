@@ -20,36 +20,40 @@ export default function FunctionCalling() {
     async function agent(query: string) {
       const messages = [{ role: "user", content: query }];
 
-      const response = await mistralClient.chat({
-        model: "mistral-large-latest",
-        messages: messages,
-        tools: tools,
-      });
+      for (let i = 0; i < 5; i++) {
+        const response = await mistralClient.chat({
+          model: "mistral-large-latest",
+          messages: messages,
+          tools: tools,
+        });
 
-      messages.push(response.choices[0].message);
+        messages.push(response.choices[0].message);
 
-      if (response.choices[0].finish_reason === "tool_calls") {
-        const functionObject =
-          response.choices[0].message.tool_calls[0].function;
-        const functionName = functionObject.name;
-        const functionArgs = JSON.parse(functionObject.arguments);
+        if (response.choices[0].finish_reason === "stop") {
+          return response.choices[0].message.content;
+        } else if (response.choices[0].finish_reason === "tool_calls") {
+          const functionObject =
+            response.choices[0].message.tool_calls[0].function;
+          const functionName = functionObject.name;
+          const functionArgs = JSON.parse(functionObject.arguments);
 
-        console.log(functionName);
-        console.log(functionArgs);
+          console.log(functionName);
+          console.log(functionArgs);
 
-        const functionResponse = (
-          availableFunctions as unknown as Record<
-            string,
-            (args: object) => object
-          >
-        )[functionName](functionArgs);
-        console.log(functionResponse);
+          const functionResponse = (
+            availableFunctions as unknown as Record<
+              string,
+              (args: object) => object
+            >
+          )[functionName](functionArgs);
+          console.log(functionResponse);
 
-        messages.push({
-          role: "tool",
-          name: functionName,
-          content: JSON.stringify(functionResponse),
-        } as { role: string; name: string; content: string }); 
+          messages.push({
+            role: "tool",
+            name: functionName,
+            content: JSON.stringify(functionResponse),
+          } as { role: string; name: string; content: string });
+        }
       }
 
       return response;
@@ -58,9 +62,9 @@ export default function FunctionCalling() {
     // const queryText = "Is the transaction T1001 paid?";
     const queryText = "when the transaction T1001 paid?";
     setText(queryText);
-    const response = await agent(queryText);
+    const response: string = await agent(queryText);
     console.log(response);
-    // setGeneratedResponse(response as unknown as string);
+    setGeneratedResponse(response as unknown as string);
   }
 
   return (
