@@ -1,14 +1,11 @@
 import React from "react";
 import { splitDocument } from "../RAG/text_splitter";
 import MistralClient from "@mistralai/mistralai";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from './singleInstanceOfSuppabase.ts'
 
 const apiKey = import.meta.env.VITE_MISTRAL_API_KEY;
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_API_KEY;
-
 const mistralClient = new MistralClient(apiKey);
-const supabase = createClient(supabaseUrl, supabaseKey);
+
 
 export default function QueryAndCompletion() {
   const [text, setText] = React.useState<string[] | null>(null);
