@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
 import ChatComponent from "./components/ChatComponent";
 import ChunkingData from "./components/ChunkingData";
 import QueryAndCompletion from "./components/QueryAndCompletion";
+import FunctionCalling from "./components/FunctionCalling";
 
 function ProjectDescription() {
   return (
@@ -35,6 +36,9 @@ function App() {
             <li className="border-b border-slate-300 ">
               <Link to="/retrieve">Retrieve Data</Link>
             </li>
+            <li className="border-b border-slate-300 ">
+              <Link to="/function-calling">Function Calling</Link>
+            </li>
           </ul>
         </nav>
 
@@ -44,6 +48,7 @@ function App() {
             <Route path="/description" element={<ProjectDescription />} />
             <Route path="/chunkingdata" element={<ChunkingData />} />
             <Route path="/retrieve" element={<QueryAndCompletion />} />
+            <Route path="/function-calling" element={<FunctionCalling />} />
           </Routes>
         </div>
       </div>
