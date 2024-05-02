@@ -41,8 +41,6 @@ export const tools = [
             },
         },
     },
-    // Challenge: 
-    // Add the schema for the new function
     {
         "type": "function",
         "function": {
