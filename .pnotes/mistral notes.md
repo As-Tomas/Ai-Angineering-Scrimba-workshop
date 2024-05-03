@@ -1,3 +1,5 @@
+https://mistral.ai/technology/#models
+
 after supabase project setup do not forget to enable extension pgvector
 then create tables
 
