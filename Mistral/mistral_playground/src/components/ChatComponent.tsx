@@ -20,11 +20,12 @@ export default function ChatComponent() {
       },
     });
 
-    // for await (const chunk of chatResponse) {   
-    //   const newContent = chunk.choices[0].delta.content || '';
-    //   setAnsw(prevAnsw => prevAnsw + newContent);
-    // }
-    setAnsw(chatResponse.choices[0].message.content);
+    for await (const chunk of chatResponse) {   
+      const newContent = chunk.choices[0].delta.content || '';
+      setAnsw(prevAnsw => prevAnsw + newContent);
+    }
+    // console.log('chatResponse', chatResponse)
+    // setAnsw(chatResponse.choices[0].message.content);
   }
 
   return (
