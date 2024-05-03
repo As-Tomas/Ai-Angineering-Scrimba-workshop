@@ -1,0 +1,12 @@
+body {
+    background-color: #eceff1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+img {
+    width: 200px;
+}

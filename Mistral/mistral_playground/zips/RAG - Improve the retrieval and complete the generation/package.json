@@ -1,0 +1,16 @@
+{
+  "name": "project",
+  "dependencies": {
+    "@mistralai/mistralai": "0.1.3",
+    "supabase": "1.150.0"
+  },
+  "devDependencies": {
+    "vite": "latest"
+  },
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  }
+}
