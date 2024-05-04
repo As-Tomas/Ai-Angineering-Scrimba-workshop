@@ -20,6 +20,7 @@ async function generateImage() {
     image = await openai.images.generate({
       model: "dall-e-3",
       prompt: prompt,
+      response_format: "b64_json",
     });
   } catch (error) {
     console.log("error", error);
@@ -32,7 +33,7 @@ async function generateImage() {
   row.innerHTML = `
   <p>Prompt: ${prompt}</p>
   <p>Revised Prompt: ${image.data[0].revised_prompt}</p>
-  <img src="${image.data[0].url}" alt="Generated Image">
+  <img src="data:image/png;base64,${image.data[0].b64_json}" alt="Generated Image">
   `;
   results.appendChild(row);
 }
