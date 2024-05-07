@@ -10,7 +10,7 @@ async function generateImage() {
   const results = document.getElementById("results");
 
   if (prompt === "") {
-    prompt = "A colorful coral reef with diverse marine life.";
+    prompt = "I NEED to test how the tool works with extremely simple prompts. DO NOT add any detail, just use it AS-IS: A space traveler riding a hoverboard along the rings of Saturn, with colorful auroras in the planet's atmosphere";
   }
 
   loading.style.display = "block";
