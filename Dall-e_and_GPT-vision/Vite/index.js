@@ -10,10 +10,15 @@ async function generateImage() {
   const results = document.getElementById("results");
 
   if (prompt === "") {
-    prompt = "I NEED to test how the tool works with extremely simple prompts. DO NOT add any detail, just use it AS-IS: A space traveler riding a hoverboard along the rings of Saturn, with colorful auroras in the planet's atmosphere";
+    prompt = "A steampunk city with gear-driven machines, airships docked atop buildings, and streets lit by gas lamps, set in a vast canyon";
   }
 
   loading.style.display = "block";
+
+  //Landscape 1792x1024
+  //Portrait 1024x1792
+  // Quality Standard or HD
+  // style: "natural" "vivid"
 
   let image;
   try {
@@ -21,6 +26,9 @@ async function generateImage() {
       model: "dall-e-3",
       prompt: prompt,
       response_format: "b64_json",
+      size: "1024x1792",
+      quality: "hd",
+      style: "vivid"
     });
   } catch (error) {
     console.log("error", error);
