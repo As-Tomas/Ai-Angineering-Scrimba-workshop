@@ -10,7 +10,8 @@ async function generateImage() {
   const results = document.getElementById("results");
 
   if (prompt === "") {
-    prompt = "A steampunk city with gear-driven machines, airships docked atop buildings, and streets lit by gas lamps, set in a vast canyon";
+    prompt =
+      "A steampunk city with gear-driven machines, airships docked atop buildings, and streets lit by gas lamps, set in a vast canyon";
   }
 
   loading.style.display = "block";
@@ -28,7 +29,7 @@ async function generateImage() {
       response_format: "b64_json",
       size: "1024x1792",
       quality: "hd",
-      style: "vivid"
+      style: "vivid",
     });
   } catch (error) {
     console.log("error", error);
@@ -46,4 +47,23 @@ async function generateImage() {
   results.appendChild(row);
 }
 
+// supported just dale-2
+async function editImage() {
+  const image = await openai.images.edit({
+    image: await fetch("images/building.png"),
+    mask: await fetch("images/mask.png"),
+    prompt:
+      "A modern building covered with glass windows and sustained by steel columns",
+    response_format: "b64_json",
+    size: "256x256",
+  });
+
+  const row = document.createElement("div");
+  row.innerHTML = `
+  <img src="data:image/png;base64,${image.data[0].b64_json}" alt="Generated Image">
+  `;
+  results.appendChild(row);
+}
+
 document.getElementById("generate").addEventListener("click", generateImage);
+document.getElementById("edit").addEventListener("click", editImage);
