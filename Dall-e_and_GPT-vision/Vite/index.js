@@ -65,5 +65,26 @@ async function editImage() {
   results.appendChild(row);
 }
 
+// supported just dale-2
+async function imageVariations() {
+  const image = await openai.images.createVariation({
+    image: await fetch("images/building.png"),
+    response_format: "b64_json",
+    size: "256x256",
+    n:3
+  });
+
+  console.log(image.data);
+
+  image.data.forEach(imageObj => {
+    const row = document.createElement("div");
+    row.innerHTML = `
+      <img src="data:image/png;base64,${imageObj.b64_json}" alt="Generated Image">
+    `;
+    results.appendChild(row);
+  });
+}
+
 document.getElementById("generate").addEventListener("click", generateImage);
 document.getElementById("edit").addEventListener("click", editImage);
+document.getElementById("variations").addEventListener("click", imageVariations);
