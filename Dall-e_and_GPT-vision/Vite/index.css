@@ -7,6 +7,7 @@ body {
   background: #343D3F; 
   padding-bottom: 20px;
   color: #222;
+  padding: 30px;
 }
 
 .container {
@@ -110,4 +111,11 @@ img {
   input[type="text"], button {
       width: 100%;
   }
+}
+
+#links a {
+  display: block;
+  font-size: 20px;
+  color: white;
+  padding: 4px;
 }
