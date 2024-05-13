@@ -1,7 +1,6 @@
 import OpenAI from "openai";
 
 const openai = new OpenAI({
-    // Save your own API key as an env variable -> https://scrimba.com/links/scrimba-env-vars
     apiKey: import.meta.env.VITE_OPENAI_API_KEY,
     dangerouslyAllowBrowser: true,
 });
@@ -25,4 +24,4 @@ async function play(file) {
 
 // main();
 
-document.getElementById("analyse").addEventListener("click", main);
+document.getElementById("play").addEventListener("click", main);
