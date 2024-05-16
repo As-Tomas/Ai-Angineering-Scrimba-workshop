@@ -12,6 +12,7 @@ npx wrangler deploy
 
 ## Install OpenAI in your Worker project
 npm install openai
+https://developers.cloudflare.com/ai-gateway/tutorials/deploy-aig-worker/#3-configure-openai-in-your-worker
 
 ## Save API key to your Workers environment
 npx wrangler secret put OPENAI_API_KEY
