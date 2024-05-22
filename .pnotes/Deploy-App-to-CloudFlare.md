@@ -19,3 +19,10 @@ npx wrangler secret put OPENAI_API_KEY
 
 ## Deploy the latest Worker changes
 npx wrangler deploy 
+
+Cross-Origin Resource Sharing (CORS)
+https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+Preflight request
+https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request
+OPTIONS
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/OPTIONS
