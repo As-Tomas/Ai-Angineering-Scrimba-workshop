@@ -89,20 +89,31 @@ function App() {
     ];
 
     try {
-      const openai = new OpenAI({
-        apiKey: OPENAI_API_KEY,
-        dangerouslyAllowBrowser: true,
-      });
+      // const openai = new OpenAI({
+      //   apiKey: OPENAI_API_KEY,
+      //   dangerouslyAllowBrowser: true,
+      // });
 
-      const response = await openai.chat.completions.create({
-        messages: messages,
-        model: "gpt-4",
-        max_tokens: 150,
-        temperature: 2, // default 1
-      });
+      // const response = await openai.chat.completions.create({
+      //   messages: messages,
+      //   model: "gpt-4",
+      //   max_tokens: 150,
+      //   temperature: 2, // default 1
+      // });
 
-      setOutput(response.choices[0].message.content);
-      console.log("first", response.choices[0].message.content);
+      const url = "https://openai-api-worker-0a0c1.tomasb-kodehode.workers.dev";
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: ''
+      })
+      const data = await response.json()
+      console.log(data)
+
+      setOutput(data.choices[0].message.content);
       setLoading(false);
     } catch (error) {
       console.log("Error:", error);
