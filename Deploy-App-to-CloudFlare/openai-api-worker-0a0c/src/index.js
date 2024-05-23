@@ -29,7 +29,7 @@ export default {
 
 		const openai = new OpenAI({
 			apiKey: env.OPENAI_API_KEY,
-			baseURL: 'https://gateway.ai.cloudflare.com/v1/d4e5f8c6f392463874fea07d627e367d/stockpredictions/openai',
+			baseURL: 'https://gateway.ai.cloudflare.com/v1/a81ada5ca99c022b1a286cacd55e6d9d/stockpredictions/openai',
 		});
 
 		const messages = await request.json();
