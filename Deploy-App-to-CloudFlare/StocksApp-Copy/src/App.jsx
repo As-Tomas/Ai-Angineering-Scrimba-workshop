@@ -43,29 +43,38 @@ function App() {
         tickersArr.map(async (ticker) => {
           try {
             console.log("ticker", ticker);
-            const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${dates.startDate}/${dates.endDate}?apiKey=${POLYGON_API_KEY}`;
-            const response = await fetch(url);
-            const data = await response.json();
-            if (response.status === 200) {
-              setApiMessage("Creating report...");
-              delete data.request_id
-              return JSON.stringify(data)
-            } else {
-              setError("There was an error fetching stock data.");
-              return null;
+            const workerUrl = `https://polygon-api-worker-snowflake-400f.tomasb-kodehode.workers.dev/?ticker=${ticker}&startDate=${dates.startDate}&endDate=${dates.endDate}`;
+            const response = await fetch(workerUrl);
+
+            if (!response.ok) {
+              const errMsg = await response.text();
+              console.error("Worker error response:", errMsg);
+              setError(`Error fetching data for ${ticker}: ${errMsg}`);
+              throw new Error(`Worker error: ${errMsg}`);
             }
+  
+            const data = await response.json();
+            setApiMessage("Creating report...");
+            delete data.request_id;
+            return JSON.stringify(data);
           } catch (err) {
-            setError("There was an error fetching stock data.");
-            console.error("error: ", err);
+            setError(`Error fetching data for ${ticker}: ${err.message}`);
+            console.error("Fetch error: ", err);
             return null;
           }
         })
       );
+  
+      if (stockData.every(data => data === null)) {
+        throw new Error("All ticker data fetch attempts failed.");
+      }
+  
       fetchReport(stockData.join(""));
     } catch (err) {
+      setError("There was an error processing your request. Please try again.");
+      console.error("Processing error: ", err);
+    } finally {
       setLoading(false);
-      setError("There was an error fetching stock data.");
-      console.error("error: ", err);
     }
   };
 
