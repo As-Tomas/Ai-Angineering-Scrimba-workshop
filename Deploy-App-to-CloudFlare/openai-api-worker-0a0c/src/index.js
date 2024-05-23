@@ -22,16 +22,21 @@ export default {
 			return new Response(null, { headers: corsHeaders });
 		}
 
+		// Only process POST requests
+		if (request.method !== 'POST') {
+			return new Response(JSON.stringify({ error: `${request.method} method not allowed.` }), { status: 405, headers: corsHeaders });
+		}
+
 		const openai = new OpenAI({
 			apiKey: env.OPENAI_API_KEY,
-			baseURL: 'https://gateway.ai.cloudflare.com/v1/d4e5f8c6f392463874fea07d627e367d/stockpredictions/openai'
+			baseURL: 'https://gateway.ai.cloudflare.com/v1/d4e5f8c6f392463874fea07d627e367d/stockpredictions/openai',
 		});
 
 		const messages = await request.json();
 
 		try {
 			const chatCompletion = await openai.chat.completions.create({
-				model: 'gpt-4',
+				model: 'gpt-4o',
 				messages,
 				temperature: 1.1,
 				presence_penalty: 0,
@@ -41,7 +46,7 @@ export default {
 
 			return new Response(JSON.stringify(response), { headers: corsHeaders });
 		} catch (e) {
-			return new Response(e, { headers: corsHeaders });
+			return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
 		}
 	},
 };

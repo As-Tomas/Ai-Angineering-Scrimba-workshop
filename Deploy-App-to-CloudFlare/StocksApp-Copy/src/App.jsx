@@ -114,6 +114,11 @@ function App() {
       const data = await response.json()
       console.log("data", data)
 
+      if (!response.ok) {
+        setError(data.error);
+        // throw new Error(`Worker Error: ${data.error}`)        
+      }
+
       setOutput(data.content);
       setLoading(false);
     } catch (error) {
