@@ -10,12 +10,17 @@ after that run:
 ## Deploy a Worker
 npx wrangler deploy
 
+Cloudflare Workers
+https://developers.cloudflare.com/workers/
+A whole new Quick Edit in Cloudflare Workers
+https://blog.cloudflare.com/improved-quick-edit
+
 ## Install OpenAI in your Worker project
 npm install openai
 https://developers.cloudflare.com/ai-gateway/tutorials/deploy-aig-worker/#3-configure-openai-in-your-worker
 
 ## Save API key to your Workers environment
-npx wrangler secret put OPENAI_API_KEY
+npx wrangler secret put OPENAI_API_KEY  
 
 ## Deploy the latest Worker changes
 npx wrangler deploy 
