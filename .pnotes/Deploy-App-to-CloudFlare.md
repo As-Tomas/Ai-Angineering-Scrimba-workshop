@@ -26,3 +26,7 @@ Preflight request
 https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request
 OPTIONS
 https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/OPTIONS
+
+## AI Gateway for rate limiting ets...
+in CloudFlare AI > AI Gateway > create new, chose platform, copy link
+need remove id from stock data to have chashed, because it is every timi diferent

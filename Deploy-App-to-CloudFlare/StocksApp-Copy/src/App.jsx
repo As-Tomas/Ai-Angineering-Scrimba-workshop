@@ -45,10 +45,11 @@ function App() {
             console.log("ticker", ticker);
             const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${dates.startDate}/${dates.endDate}?apiKey=${POLYGON_API_KEY}`;
             const response = await fetch(url);
-            const data = await response.text();
+            const data = await response.json();
             if (response.status === 200) {
               setApiMessage("Creating report...");
-              return data;
+              delete data.request_id
+              return JSON.stringify(data)
             } else {
               setError("There was an error fetching stock data.");
               return null;
