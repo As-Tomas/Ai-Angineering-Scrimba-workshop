@@ -26,10 +26,12 @@ export default {
 			apiKey: env.OPENAI_API_KEY,
 		});
 
+		const messages = await request.json();
+
 		try {
 			const chatCompletion = await openai.chat.completions.create({
 				model: 'gpt-4',
-				messages: [{ role: 'user', content: 'Should I trust stock predictions from Dodgy Dave?' }],
+				messages,
 				temperature: 1.1,
 				presence_penalty: 0,
 				frequency_penalty: 0,

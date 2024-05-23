@@ -108,12 +108,12 @@ function App() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: ''
+        body: JSON.stringify(messages),
       })
       const data = await response.json()
-      console.log(data)
+      console.log("data", data)
 
-      setOutput(data.choices[0].message.content);
+      setOutput(data.content);
       setLoading(false);
     } catch (error) {
       console.log("Error:", error);
