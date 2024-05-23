@@ -1,8 +1,4 @@
 import React, { useState, useEffect, Text, Image } from "react";
-import OpenAI from "openai";
-
-const POLYGON_API_KEY = import.meta.env.VITE_REACT_APP_POLYGON_API_KEY;
-const OPENAI_API_KEY = import.meta.env.VITE_REACT_APP_OPENAI_API_KEY;
 
 import { dates } from "./assets/utils/dates.jsx";
 import logo from "./assets/images/logo-dave-text.png";
@@ -73,9 +69,7 @@ function App() {
     } catch (err) {
       setError("There was an error processing your request. Please try again.");
       console.error("Processing error: ", err);
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   // if (tickersArr.length > 0) {
