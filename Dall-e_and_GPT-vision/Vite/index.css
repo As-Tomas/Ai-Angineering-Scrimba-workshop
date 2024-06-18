@@ -44,6 +44,10 @@ h1 {
   margin-bottom: 20px;
 }
 
+#loading, #results {
+  color: #fff;
+}
+
 button,
 input {
   font-size: 1.125rem;
